@@ -7,79 +7,110 @@
     <style>
         :root {
             --primary-color: #4CAF50;
-            --secondary-color: #f8f9fa;
             --danger-color: #f44336;
+            --secondary-color: #f8f9fa;
             --border-color: #ddd;
             --text-color: #333;
+            --absent-color: #ffebee;
+            --present-color: #e8f5e9;
+            --holiday-color: #f5f5f5;
+            --section-color: #e3f2fd;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 0;
             direction: rtl;
+            color: var(--text-color);
             background-color: #f5f5f5;
+            font-size: 14px;
         }
         
         .container {
             max-width: 100%;
+            padding: 10px;
             margin: 0 auto;
         }
         
         .header {
             background-color: var(--primary-color);
             color: white;
-            padding: 10px;
+            padding: 10px 0;
             text-align: center;
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 3px;
+            font-size: 16px;
         }
         
         .controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            padding: 5px;
         }
         
         button {
-            padding: 8px 15px;
+            padding: 5px 10px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 3px;
             cursor: pointer;
+            font-size: 12px;
         }
         
         .btn-danger {
             background-color: var(--danger-color);
         }
         
-        select, input {
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
+        .btn-secondary {
+            background-color: #757575;
         }
         
-        .table-container {
+        .month-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .section-selector {
+            background-color: var(--section-color);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        select {
+            padding: 5px 10px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .table-wrapper {
             overflow-x: auto;
-            background: white;
+            margin-bottom: 20px;
+            background-color: white;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 12px;
         }
         
         th, td {
             border: 1px solid var(--border-color);
-            padding: 8px;
+            padding: 5px;
             text-align: center;
         }
         
@@ -87,287 +118,618 @@
             background-color: var(--secondary-color);
             position: sticky;
             top: 0;
+            z-index: 2;
+        }
+        
+        .student-name-header {
+            position: sticky;
+            left: 0;
+            z-index: 4 !important;
         }
         
         .student-name-cell {
-            background-color: var(--secondary-color);
-            font-weight: bold;
             position: sticky;
             left: 0;
+            background-color: var(--secondary-color);
+            z-index: 3;
+            font-weight: bold;
+            white-space: nowrap;
+            width: 120px;
+        }
+        
+        .student-name {
+            display: inline-block;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
         }
         
         .serial-number {
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .attendance-count {
             font-size: 0.8em;
             color: #666;
+            margin-left: 3px;
+        }
+        
+        .day-cell {
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
+            height: 50px;
+            position: relative;
+        }
+        
+        .present {
+            background-color: var(--present-color);
+        }
+        
+        .absent {
+            background-color: var(--absent-color);
+        }
+        
+        .holiday {
+            background-color: var(--holiday-color);
+            color: #999;
+        }
+        
+        .total-cell {
+            font-weight: bold;
+            background-color: var(--secondary-color);
+            position: sticky;
+            right: 0;
+            z-index: 2;
+        }
+        
+        .summary-row td {
+            font-weight: bold;
+            background-color: #f5f5f5;
+        }
+        
+        input[type="checkbox"] {
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        
+        .student-name-label {
+            font-size: 9px;
+            position: absolute;
+            bottom: 2px;
+            right: 0;
+            left: 0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .holiday-name {
+            font-size: 9px;
+            color: #999;
             margin-top: 5px;
         }
         
-        .section-selector {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .day-count {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                font-size: 12px;
+            }
+            
+            .header {
+                padding: 8px 0;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            
+            .month-selector select, .month-selector button {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 3px;
+                font-size: 11px;
+            }
+            
+            .student-name-cell {
+                width: 100px;
+            }
+            
+            .student-name {
+                max-width: 70px;
+            }
+            
+            .day-cell {
+                width: 25px;
+                min-width: 25px;
+                max-width: 25px;
+                height: 45px;
+            }
+            
+            .student-name-label,
+            .holiday-name {
+                font-size: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>مدرسہ حاضری رجسٹر</h1>
+            <h1 style="margin:5px;font-size:1.2em">مدرسہ حاضری رجسٹر</h1>
+            <p style="margin:0;font-size:0.9em">(صرف جمعرات کو چھٹی)</p>
         </div>
         
         <div class="section-selector">
-            <h3>سیکشن منتخب کریں:</h3>
-            <select id="sectionSelector">
+            <h3 style="margin:0 0 5px 0">سیکشن منتخب کریں:</h3>
+            <select id="sectionSelect">
                 <option value="section1">سیکشن 1</option>
                 <option value="section2">سیکشن 2</option>
                 <option value="section3">سیکشن 3</option>
             </select>
+            <button id="addSection" style="margin-right:10px">نیا سیکشن</button>
         </div>
         
         <div class="controls">
-            <select id="yearSelector"></select>
-            <select id="monthSelector"></select>
+            <button id="saveData">محفوظ کریں</button>
             <button id="addStudent">نیا طالب علم</button>
             <button id="resetData" class="btn-danger">ری سیٹ کریں</button>
-            <button id="saveData">محفوظ کریں</button>
+            <button id="printReport" class="btn-secondary">پرنٹ رپورٹ</button>
         </div>
         
-        <div class="table-container">
+        <div class="month-selector">
+            <button id="prevMonth">← پچھلا مہینہ</button>
+            <select id="monthSelect"></select>
+            <select id="yearSelect"></select>
+            <button id="nextMonth">اگلا مہینہ →</button>
+        </div>
+        
+        <div class="table-wrapper">
             <table id="attendanceTable">
                 <thead id="datesHeader"></thead>
                 <tbody id="studentsBody"></tbody>
-                <tfoot id="attendanceSummary"></tfoot>
+                <tfoot id="summaryFooter"></tfoot>
             </table>
         </div>
     </div>
 
     <script>
-        // ڈیٹا اسٹوریج
-        let attendanceData = JSON.parse(localStorage.getItem('madrasa_attendance')) || {};
-        let studentsData = JSON.parse(localStorage.getItem('madrasa_students')) || {};
+        // موجودہ مہینہ اور سال کا تعین
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
         let currentSection = 'section1';
         
-        // سال اور مہینے کی تیاری
-        const currentYear = new Date().getFullYear();
-        const years = Array.from({length: 11}, (_, i) => currentYear + i);
-        const months = [
-            'جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون',
-            'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'
-        ];
-        
-        // ایپ شروع کریں
+        // طلباء اور حاضری کا ڈیٹا
+        let madrasaData = JSON.parse(localStorage.getItem('madrasa_data')) || {
+            sections: {
+                section1: { students: [], attendance: {} },
+                section2: { students: [], attendance: {} },
+                section3: { students: [], attendance: {} }
+            }
+        };
+
+        // ایپ کو شروع کرنا
         document.addEventListener('DOMContentLoaded', function() {
-            initYearSelector();
-            initMonthSelector();
-            renderTable();
+            initMonthYearSelectors();
+            renderMonthAttendance();
             
             // ایونٹ لسٹنرز
-            document.getElementById('yearSelector').addEventListener('change', renderTable);
-            document.getElementById('monthSelector').addEventListener('change', renderTable);
-            document.getElementById('sectionSelector').addEventListener('change', function() {
-                currentSection = this.value;
-                renderTable();
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderMonthAttendance();
             });
+            
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderMonthAttendance();
+            });
+            
+            document.getElementById('monthSelect').addEventListener('change', function() {
+                currentMonth = parseInt(this.value);
+                renderMonthAttendance();
+            });
+            
+            document.getElementById('yearSelect').addEventListener('change', function() {
+                currentYear = parseInt(this.value);
+                renderMonthAttendance();
+            });
+            
+            document.getElementById('sectionSelect').addEventListener('change', function() {
+                currentSection = this.value;
+                renderMonthAttendance();
+            });
+            
+            document.getElementById('addSection').addEventListener('click', addNewSection);
+            document.getElementById('saveData').addEventListener('click', saveData);
             document.getElementById('addStudent').addEventListener('click', addStudent);
             document.getElementById('resetData').addEventListener('click', resetData);
-            document.getElementById('saveData').addEventListener('click', saveData);
+            document.getElementById('printReport').addEventListener('click', printReport);
         });
-        
-        function initYearSelector() {
-            const selector = document.getElementById('yearSelector');
-            years.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                selector.appendChild(option);
-            });
-            selector.value = currentYear;
-        }
-        
-        function initMonthSelector() {
-            const selector = document.getElementById('monthSelector');
+
+        // مہینہ اور سال کے سیلیکٹرز کو بھرنا
+        function initMonthYearSelectors() {
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            
+            // مہینوں کی فہرست
+            const months = [
+                'جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون',
+                'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'
+            ];
+            
             months.forEach((month, index) => {
                 const option = document.createElement('option');
                 option.value = index;
                 option.textContent = month;
-                selector.appendChild(option);
+                if (index === currentMonth) {
+                    option.selected = true;
+                }
+                monthSelect.appendChild(option);
             });
-            selector.value = new Date().getMonth();
-        }
-        
-        function renderTable() {
-            const year = document.getElementById('yearSelector').value;
-            const month = document.getElementById('monthSelector').value;
             
-            // طلباء کی فہرست
-            if (!studentsData[currentSection]) {
-                studentsData[currentSection] = [];
+            // سالوں کی فہرست (2035 تک)
+            const startYear = 2025;
+            const endYear = 2035;
+            for (let year = startYear; year <= endYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                if (year === currentYear) {
+                    option.selected = true;
+                }
+                yearSelect.appendChild(option);
             }
-            const students = studentsData[currentSection];
-            
-            // تاریخ کی تیاری
-            const daysInMonth = new Date(year, parseInt(month)+1, 0).getDate();
-            
-            // ہیڈر بنائیں
-            renderHeader(year, month, daysInMonth);
-            
-            // طلباء کی فہرست بنائیں
-            renderStudents(students, year, month, daysInMonth);
-            
-            // حاضری کا خلاصہ بنائیں
-            renderSummary(students, daysInMonth);
         }
-        
-        function renderHeader(year, month, daysInMonth) {
-            const headerRow = document.getElementById('datesHeader');
-            headerRow.innerHTML = '<th class="student-name-cell">نام / سیریل نمبر</th>';
+
+        // مہینے کی حاضری کو ظاہر کرنا
+        function renderMonthAttendance() {
+            // مہینے کے پہلے اور آخری دن کا تعین
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
             
+            // مہینے کے نام اور سال کا اپڈیٹ
+            document.getElementById('monthSelect').value = currentMonth;
+            document.getElementById('yearSelect').value = currentYear;
+            
+            // موجودہ سیکشن کا ڈیٹا
+            const sectionData = madrasaData.sections[currentSection] || { students: [], attendance: {} };
+            const students = sectionData.students;
+            const attendance = sectionData.attendance;
+            
+            // تاریخوں کا ہیڈر بنانا
+            const datesHeader = document.getElementById('datesHeader');
+            datesHeader.innerHTML = '<tr><th class="student-name-header student-name-cell">طالب علم / سیریل نمبر</th>';
+            
+            // ہفتہ کے دنوں کے نام
+            const weekDays = ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'];
+            
+            // تمام تاریخوں کے لیے ہیڈر بنانا
             for (let day = 1; day <= daysInMonth; day++) {
-                const date = new Date(year, month, day);
+                const date = new Date(currentYear, currentMonth, day);
+                const dayOfWeek = date.getDay();
+                const dayName = weekDays[dayOfWeek];
+                
                 const th = document.createElement('th');
-                th.textContent = day;
-                th.dataset.date = date.toISOString().split('T')[0];
-                headerRow.appendChild(th);
+                th.textContent = `${day}\n${dayName}`;
+                th.title = `${day}/${currentMonth + 1}/${currentYear}`;
+                th.dataset.date = formatDate(date);
+                th.dataset.day = dayName;
+                
+                // صرف جمعرات کو چھٹی کے طور پر نشان زد کریں
+                if (dayName === 'جمعرات') {
+                    th.classList.add('holiday');
+                }
+                
+                datesHeader.querySelector('tr').appendChild(th);
             }
+            
+            // ٹوٹل کالم کا ہیڈر
+            const totalTh = document.createElement('th');
+            totalTh.textContent = 'غیر حاضری';
+            totalTh.className = 'total-cell';
+            datesHeader.querySelector('tr').appendChild(totalTh);
+            
+            // طلباء کی فہرست بنانا
+            renderStudentsList(students, attendance, daysInMonth);
+            
+            // خلاصہ بنانا
+            renderSummaryFooter(students, daysInMonth);
         }
-        
-        function renderStudents(students, year, month, daysInMonth) {
+
+        // طلباء کی فہرست بنانا
+        function renderStudentsList(students, attendance, daysInMonth) {
             const tbody = document.getElementById('studentsBody');
             tbody.innerHTML = '';
             
+            // تمام تاریخوں کو حاصل کرنا
+            const dateElements = document.querySelectorAll('#datesHeader th:not(:first-child):not(:last-child)');
+            
             students.forEach((student, index) => {
                 const row = document.createElement('tr');
+                let absentCount = 0;
                 
-                // نام اور سیریل نمبر
+                // طالب علم کا نام اور سیریل نمبر
                 const nameCell = document.createElement('td');
                 nameCell.className = 'student-name-cell';
-                nameCell.innerHTML = `
-                    ${student.name}
-                    <span class="serial-number">(${index+1})</span>
-                    <button class="btn-danger" data-id="${student.id}" style="float:left; padding:2px 5px; font-size:0.8em">×</button>
-                `;
+                
+                // ڈیلیٹ بٹن
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-danger';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.title = 'حذف کریں';
+                deleteBtn.dataset.id = student.id;
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteStudent(student.id);
+                });
+                
+                // طالب علم کا نام اور سیریل نمبر
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'student-name';
+                nameSpan.textContent = student.name;
+                
+                const serialSpan = document.createElement('span');
+                serialSpan.className = 'serial-number';
+                serialSpan.textContent = `(${index + 1})`;
+                
+                nameCell.appendChild(deleteBtn);
+                nameCell.appendChild(nameSpan);
+                nameCell.appendChild(serialSpan);
                 row.appendChild(nameCell);
                 
-                // ہر دن کے لیے چیک باکس
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const date = new Date(year, month, day).toISOString().split('T')[0];
-                    const td = document.createElement('td');
+                // ہر دن کے لیے چیک باکس بنانا
+                dateElements.forEach(th => {
+                    const date = th.dataset.date;
+                    const dayName = th.dataset.day;
+                    
+                    const cell = document.createElement('td');
+                    cell.className = 'day-cell';
+                    
+                    // صرف جمعرات کو چھٹی کے طور پر نشان زد کریں
+                    if (dayName === 'جمعرات') {
+                        cell.classList.add('holiday');
+                        
+                        // جمعرات کے خانے میں طالب علم کا نام
+                        const holidayName = document.createElement('div');
+                        holidayName.className = 'holiday-name';
+                        holidayName.textContent = student.name;
+                        cell.appendChild(holidayName);
+                        
+                        row.appendChild(cell);
+                        return;
+                    }
                     
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.dataset.studentId = student.id;
                     checkbox.dataset.date = date;
                     
-                    // اگر پہلے سے ڈیٹا موجود ہے تو چیک کریں
-                    const key = `${currentSection}_${student.id}_${date}`;
-                    if (attendanceData[key]) {
+                    // اگر پہلے سے ڈیٹا موجود ہے تو چیک باکس کو چیک کریں
+                    const key = `${student.id}_${date}`;
+                    if (attendance[key]) {
                         checkbox.checked = true;
+                        cell.classList.add('present');
+                    } else {
+                        absentCount++;
+                        cell.classList.add('absent');
                     }
                     
-                    td.appendChild(checkbox);
-                    row.appendChild(td);
-                }
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            cell.classList.remove('absent');
+                            cell.classList.add('present');
+                            absentCount--;
+                        } else {
+                            cell.classList.remove('present');
+                            cell.classList.add('absent');
+                            absentCount++;
+                        }
+                        // ٹوٹل غیر حاضری اپڈیٹ کریں
+                        row.querySelector('.total-cell').textContent = absentCount;
+                        
+                        // خلاصہ اپڈیٹ کریں
+                        updateSummaryFooter();
+                    });
+                    
+                    cell.appendChild(checkbox);
+                    
+                    // چیک باکس کے نیچے طالب علم کا نام
+                    const nameLabel = document.createElement('div');
+                    nameLabel.className = 'student-name-label';
+                    nameLabel.textContent = student.name;
+                    cell.appendChild(nameLabel);
+                    
+                    row.appendChild(cell);
+                });
+                
+                // ٹوٹل غیر حاضری کا سیل
+                const totalCell = document.createElement('td');
+                totalCell.className = 'total-cell';
+                totalCell.textContent = absentCount;
+                row.appendChild(totalCell);
                 
                 tbody.appendChild(row);
             });
-            
-            // ڈیلیٹ بٹن کے ایونٹس
-            document.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    deleteStudent(this.dataset.id);
-                });
-            });
-            
-            // چیک باکس تبدیلی کے ایونٹس
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const key = `${currentSection}_${this.dataset.studentId}_${this.dataset.date}`;
-                    attendanceData[key] = this.checked;
-                    renderSummary(students, daysInMonth);
-                });
-            });
         }
-        
-        function renderSummary(students, daysInMonth) {
-            const tfoot = document.getElementById('attendanceSummary');
-            tfoot.innerHTML = '';
+
+        // خلاصہ فوٹر بنانا
+        function renderSummaryFooter(students, daysInMonth) {
+            const footer = document.getElementById('summaryFooter');
+            footer.innerHTML = '';
             
             const row = document.createElement('tr');
-            row.innerHTML = '<th>حاضری کا خلاصہ</th>';
+            row.className = 'summary-row';
             
-            for (let day = 1; day <= daysInMonth; day++) {
-                const date = document.querySelector(`th[data-date]:nth-child(${day+1})`).dataset.date;
-                let presentCount = 0;
+            // خلیہ
+            const labelCell = document.createElement('td');
+            labelCell.textContent = 'خلاصہ:';
+                labelCell.style.textAlign = 'left';
+                row.appendChild(labelCell);
                 
-                students.forEach(student => {
-                    const key = `${currentSection}_${student.id}_${date}`;
-                    if (attendanceData[key]) {
-                        presentCount++;
+                // تمام تاریخوں کو حاصل کرنا
+                const dateElements = document.querySelectorAll('#datesHeader th:not(:first-child):not(:last-child)');
+                
+                // ہر دن کے لیے حاضر/غیر حاضر کی تعداد
+                dateElements.forEach(th => {
+                    const date = th.dataset.date;
+                    const dayName = th.dataset.day;
+                    
+                    const cell = document.createElement('td');
+                    
+                    if (dayName === 'جمعرات') {
+                        cell.textContent = 'چھٹی';
+                        cell.classList.add('holiday');
+                        row.appendChild(cell);
+                        return;
                     }
+                    
+                    let presentCount = 0;
+                    const students = madrasaData.sections[currentSection].students;
+                    const attendance = madrasaData.sections[currentSection].attendance;
+                    
+                    students.forEach(student => {
+                        const key = `${student.id}_${date}`;
+                        if (attendance[key]) {
+                            presentCount++;
+                        }
+                    });
+                    
+                    const totalStudents = students.length;
+                    const absentCount = totalStudents - presentCount;
+                    
+                    cell.innerHTML = `
+                        <div>حاضر: ${presentCount}</div>
+                        <div>غیر حاضر: ${absentCount}</div>
+                    `;
+                    
+                    row.appendChild(cell);
                 });
                 
-                const td = document.createElement('td');
-                td.innerHTML = `
-                    <div>حاضر: ${presentCount}</div>
-                    <div>غیر حاضر: ${students.length - presentCount}</div>
-                `;
-                row.appendChild(td);
-            }
-            
-            tfoot.appendChild(row);
-        }
-        
-        function addStudent() {
-            const name = prompt('نیا طالب علم کا نام درج کریں:');
-            if (name && name.trim()) {
-                const students = studentsData[currentSection];
-                const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+                // خالی خلیہ
+                const emptyCell = document.createElement('td');
+                row.appendChild(emptyCell);
                 
-                students.push({
-                    id: newId,
-                    name: name.trim()
+                footer.appendChild(row);
+            }
+
+            // خلاصہ کو اپڈیٹ کرنا
+            function updateSummaryFooter() {
+                const students = madrasaData.sections[currentSection].students;
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                renderSummaryFooter(students, daysInMonth);
+            }
+
+            // نیا سیکشن شامل کرنا
+            function addNewSection() {
+                const sectionName = prompt('نیا سیکشن کا نام درج کریں:');
+                if (sectionName && sectionName.trim()) {
+                    const sectionId = 'section' + (Object.keys(madrasaData.sections).length + 1);
+                    madrasaData.sections[sectionId] = { students: [], attendance: {} };
+                    
+                    const option = document.createElement('option');
+                    option.value = sectionId;
+                    option.textContent = sectionName.trim();
+                    document.getElementById('sectionSelect').appendChild(option);
+                    
+                    // نئے سیکشن کو منتخب کریں
+                    document.getElementById('sectionSelect').value = sectionId;
+                    currentSection = sectionId;
+                    renderMonthAttendance();
+                }
+            }
+
+            // طالب علم حذف کرنا
+            function deleteStudent(studentId) {
+                if (confirm(`کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟ تمام ڈیٹا بھی حذف ہو جائے گا۔`)) {
+                    // طالب علم کو لسٹ سے حذف کریں
+                    madrasaData.sections[currentSection].students = madrasaData.sections[currentSection].students.filter(
+                        student => student.id !== parseInt(studentId)
+                    );
+                    
+                    // متعلقہ ڈیٹا حذف کریں
+                    Object.keys(madrasaData.sections[currentSection].attendance).forEach(key => {
+                        if (key.startsWith(`${studentId}_`)) {
+                            delete madrasaData.sections[currentSection].attendance[key];
+                        }
+                    });
+                    
+                    renderMonthAttendance();
+                }
+            }
+
+            // نئے طالب علم کو شامل کرنا
+            function addStudent() {
+                const name = prompt('نیا طالب علم شامل کریں\nنام درج کریں:');
+                if (name && name.trim()) {
+                    const students = madrasaData.sections[currentSection].students;
+                    const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+                    
+                    students.push({
+                        id: newId,
+                        name: name.trim()
+                    });
+                    
+                    renderMonthAttendance();
+                }
+            }
+
+            // ڈیٹا کو محفوظ کرنا
+            function saveData() {
+                // تمام چیک باکسز کا ڈیٹا محفوظ کریں
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    const key = `${checkbox.dataset.studentId}_${checkbox.dataset.date}`;
+                    madrasaData.sections[currentSection].attendance[key] = checkbox.checked;
                 });
                 
-                renderTable();
+                localStorage.setItem('madrasa_data', JSON.stringify(madrasaData));
+                alert('ڈیٹا محفوظ ہو گیا!');
             }
-        }
-        
-        function deleteStudent(studentId) {
-            if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟')) {
-                studentsData[currentSection] = studentsData[currentSection].filter(s => s.id != studentId);
-                
-                // متعلقہ حاضری ڈیٹا بھی حذف کریں
-                Object.keys(attendanceData).forEach(key => {
-                    if (key.startsWith(`${currentSection}_${studentId}_`)) {
-                        delete attendanceData[key];
-                    }
-                });
-                
-                renderTable();
+
+            // ڈیٹا کو ری سیٹ کرنا
+            function resetData() {
+                if (confirm('کیا آپ واقعی تمام ڈیٹا ری سیٹ کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہوگا۔')) {
+                    localStorage.removeItem('madrasa_data');
+                    madrasaData = {
+                        sections: {
+                            section1: { students: [], attendance: {} },
+                            section2: { students: [], attendance: {} },
+                            section3: { students: [], attendance: {} }
+                        }
+                    };
+                    renderMonthAttendance();
+                }
             }
-        }
-        
-        function resetData() {
-            if (confirm('کیا آپ واقعی تمام ڈیٹا ری سیٹ کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہوگا۔')) {
-                localStorage.clear();
-                attendanceData = {};
-                studentsData = {};
-                renderTable();
+
+            // رپورٹ پرنٹ کرنا
+            function printReport() {
+                window.print();
             }
-        }
-        
-        function saveData() {
-            localStorage.setItem('madrasa_attendance', JSON.stringify(attendanceData));
-            localStorage.setItem('madrasa_students', JSON.stringify(studentsData));
-            alert('ڈیٹا محفوظ ہو گیا!');
-        }
-    </script>
-</body>
+
+            // تاریخ کو فارمیٹ کرنا (YYYY-MM-DD)
+            function formatDate(date) {
+                const d = new Date(date);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+        </script>
+    </body>
 </html>
